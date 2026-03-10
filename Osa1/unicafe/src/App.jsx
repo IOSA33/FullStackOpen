@@ -1,38 +1,71 @@
 import { useState } from 'react'
 
-
-const Display = (props) => {
+const Header = ({ header }) => {
   return (
-    <div>
-      {props.counter}
-    </div>
+    <h1> { header }  </h1>
   )
 }
 
-const Button = (props) => {
+const Button = ({onClick, text}) => {
   return (
-    <button onClick={ props.OnClick }>
-      { props.text }
-    </button>
+    <button onClick={ onClick }> { text } </button>
   )
+}
+
+const StatisticLine = ( { text, value, other } ) => {
+  return (
+    <tr> 
+      <td> {text} </td>
+      <td> {value} {other} </td>
+    </tr>
+  )
+} 
+
+const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad
+  const average = all === 0 ? 0 : (good - bad) / all
+  const positive = all === 0 ? 0 : (good / all) * 100
+
+  if (all != 0) {
+    return (
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={all} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positive} other={"%"} />
+        </tbody>
+      </table>
+    )
+  }
+
+  return (
+    <div> No feedback given </div>
+  )
+
 }
 
 const App = () => {
-  const [ counter, setCounter ] = useState(0);
-
-  const increase = () => setCounter(counter + 1)
-  const decrease = () => setCounter(counter - 1)
-  const zero = () => setCounter(0)
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
   return (
     <div>
-      <Display counter={ counter } />
-      <Button OnClick={ increase } text={ "add" }/>
-      <Button OnClick={ decrease } text={ "remove" }/>
-      <Button OnClick={ zero } text={ "zero" }/>
-    </div>
-  )
+      <Header header={"give feedback"}/>
 
+      <Button onClick={() => setGood(good + 1)} text={"good"}/>
+      <Button onClick={() => setNeutral(neutral + 1)} text={"neutral"}/>
+      <Button onClick={() => setBad(bad + 1)} text={"bad"}/>
+
+      <Header header={"statistics"}/>
+
+      <Statistics good={good} neutral={neutral} bad={bad} />
+    </div>
+
+  )
 }
 
 export default App
