@@ -1,4 +1,4 @@
-const Header = (props) => <h1>{props.course}</h1>
+const Header = ( {text} ) => <h1>{text}</h1>
 
 const Content = ({ parts }) => {
   return ( 
@@ -18,54 +18,86 @@ const Part = ({ part }) => {
   )
 }
 
-const Total = ( {total} ) => {
+const Total = ({ total }) => {
   return ( 
-    <b>Number of exercises {total}</b>
+    <b>total of exercises {total}</b>
+  )
+}
+
+const Course = ({ oneCourse }) => {
+  const totalAmount = oneCourse.parts.reduce((sum, part) => {
+    return sum + part.exercises
+  },0)
+
+  return (
+    <div>
+      <Header text={oneCourse.name} />
+      <Content parts={oneCourse.parts} />
+      <Total total={totalAmount} />
+    </div>
+  )
+}
+
+const Courses = ({ allCourses }) => {
+  return (
+    <div>
+      { allCourses.map(prop => {
+        return <Course key={prop.id} oneCourse={prop} />
+      }) }
+    </div>
   )
 }
 
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    id: 1,
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10,
-        id: 1
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7,
-        id: 2
-      },
-      {
-        name: 'State of a component',
-        exercises: 14,
-        id: 3
-      },
-      {
-        name: 'Redux',
-        exercises: 9,
-        id: 4
-      }
-    ]
-  }
-
-  const sumOfEx = (list) => {
-    let sum = 0
-    for(let i = 0; i<list.length; i++) {
-      sum += list[i].exercises
+  const courses = [
+    {
+      name: 'Half Stack application development',
+      id: 1,
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10,
+          id: 1
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7,
+          id: 2
+        },
+        {
+          name: 'State of a component',
+          exercises: 14,
+          id: 3
+        },
+        {
+          name: 'Redux',
+          exercises: 11,
+          id: 4
+        }
+      ]
+    }, 
+    {
+      name: 'Node.js',
+      id: 2,
+      parts: [
+        {
+          name: 'Routing',
+          exercises: 3,
+          id: 1
+        },
+        {
+          name: 'Middlewares',
+          exercises: 7,
+          id: 2
+        }
+      ]
     }
-
-    return sum
-  }
+  ]
 
   return (
     <div>
-      <Header course={course.name} />
-      <Content parts={course.parts} />
-      <Total total={sumOfEx(course.parts)} />
+      <Header text={"Web development curriculum"} />
+      <Courses allCourses={courses} />
     </div>
   )
 }
