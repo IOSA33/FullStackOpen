@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react'
 import apiService from './personsApi'
 import "./index.css"
 
-const Notification = ({ message }) => {
+const Notification = ({ message, errorType }) => {
   if (message === null) {
     return null
   }
 
+  const className = errorType === true ? "error" : "error1"
+
   return (
-    <div className='error'>
+    <div className={className}>
       {message}
     </div>
   )
@@ -81,6 +83,7 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState("")
   const [findByName, setFindByName] = useState("")
   const [errorMessage, setErrorMessage] = useState(null)
+  const [errorState, setErrorState] = useState(true)
 
   const addNote = (event) => {
     event.preventDefault()
@@ -115,7 +118,16 @@ const App = () => {
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
-        }).catch(()=>console.log("Error in map!"))
+        }).catch(()=>{
+          console.log("Error in map!")
+        
+          setErrorMessage(`Information of '${newName}' has already been removed from server`)
+          setErrorState(false)
+          setTimeout(() => {
+            setErrorMessage(null)
+            setErrorState(true)
+          }, 5000);
+        })
       } else {
         console.log("Pressed Cancel!")
       }
@@ -166,7 +178,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={errorMessage}/>
+      <Notification message={errorMessage} errorType={errorState}/>
 
       <Filter valueToFind={findByName} onChange={handleFindByNameChange}/>
 
