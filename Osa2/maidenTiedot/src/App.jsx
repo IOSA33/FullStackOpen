@@ -9,7 +9,7 @@ const Form = ({ filter, onChangeFilter }) => {
   )
 }
 
-const RenderCountries = ({ countriesList, oneCountry }) => {
+const RenderCountries = ({ countriesList, oneCountry, buttonOnChange }) => {
   if (countriesList.length > 10) {
     return ( 
       <div> Too many mathces, specify another filter </div>
@@ -36,10 +36,10 @@ const RenderCountries = ({ countriesList, oneCountry }) => {
       {countriesList.map((country) => {
         return (
           <li key={country.name.common}>
-            {country.name.common}
+            {country.name.common} <button onClick={() => buttonOnChange(country.name.common)}>Show</button>
           </li>
         )
-      })}   
+      })}
     </div>
   )
 }
@@ -66,10 +66,14 @@ const App = () => {
     )
   }
 
+  const handleShowCountry = (country) => {
+    setFilter(country.toLowerCase())
+  }
+
   let countryForUseEffect
   if(filteredList.length === 1) {
     countryForUseEffect = filteredList[0].name.common
-  } 
+  }
   
   useEffect(() => {
     if (filteredList.length === 1) {
@@ -85,7 +89,7 @@ const App = () => {
     <div>
       <Form filter={filter} onChangeFilter={handleFilterChange}/>
 
-      <RenderCountries countriesList={filteredList} oneCountry={oneCountry} />
+      <RenderCountries countriesList={filteredList} oneCountry={oneCountry} buttonOnChange={handleShowCountry} />
     </div>
   )
 }
