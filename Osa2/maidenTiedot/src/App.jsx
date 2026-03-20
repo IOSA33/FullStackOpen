@@ -1,6 +1,8 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
 
+const api_key = import.meta.env.VITE_SOME_KEY
+
 const Form = ({ filter, onChangeFilter }) => {
   return (
     <div>
@@ -9,7 +11,7 @@ const Form = ({ filter, onChangeFilter }) => {
   )
 }
 
-const RenderCountries = ({ countriesList, oneCountry, buttonOnChange }) => {
+const RenderCountries = ({ countriesList, oneCountry, buttonOnChange, weather }) => {
   if (countriesList.length > 10) {
     return ( 
       <div> Too many mathces, specify another filter </div>
@@ -28,6 +30,11 @@ const RenderCountries = ({ countriesList, oneCountry, buttonOnChange }) => {
           </ul>
         ))}
         <img src={oneCountry.flags.png} alt="flag" />
+
+        <h1>Weather in {oneCountry.capital} </h1>
+        <p>Temperature {weather.current.temp} Celsius</p>
+        <img />
+        <p>Wind {weather.current.wind_speed} m/s </p>
       </div>
     )    
   }
@@ -48,6 +55,7 @@ const App = () => {
   const [filter, setFilter] = useState("")
   const [matches, setMatches] = useState([])
   const [oneCountry, setOneCountry] = useState(null)
+  const [weather, setWeather] = useState(null)
 
   const handleFilterChange = event => {
     setFilter(event.target.value)
@@ -85,11 +93,20 @@ const App = () => {
     }
   }, [countryForUseEffect])
 
+  useEffect(() => {
+    if (api_key && filteredList.length === 1) {
+      axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${filteredList[0].latlng[0]}&lon=${filteredList[0].latlng[1]}&units=metric&appid=${api_key}`)
+      .then(response => {
+        setWeather(response.data)
+      }).catch(() => console.log("unable to get weather data"))
+    }
+  }, [countryForUseEffect])
+
   return (
     <div>
       <Form filter={filter} onChangeFilter={handleFilterChange}/>
 
-      <RenderCountries countriesList={filteredList} oneCountry={oneCountry} buttonOnChange={handleShowCountry} />
+      <RenderCountries countriesList={filteredList} oneCountry={oneCountry} buttonOnChange={handleShowCountry} weather={weather} />
     </div>
   )
 }
