@@ -18,7 +18,7 @@ const Persons = ({ allPersons, filteredByName, deleteOnClick }) => {
       <div>
         {allPersons.map(person => {
           return ( 
-            <p key={person.name}> 
+            <p key={person.id}> 
               {person.name} {person.number} <button onClick={() => deleteOnClick(person.id, person.name)}> delete </button>
             </p>
           )
@@ -31,8 +31,8 @@ const Persons = ({ allPersons, filteredByName, deleteOnClick }) => {
         {allPersons.map(person => {
           if (person.name.toLowerCase().indexOf(filteredByName.toLowerCase()) != -1) {
             return (
-              <p key={person.name}>
-                {person.name} {person.number} <button onClick={deleteOnClick}> delete </button>
+              <p key={person.id}>
+                {person.name} {person.number} <button onClick={() => deleteOnClick(person.id, person.name)}> delete </button>
               </p>
             )
           }
@@ -78,13 +78,26 @@ const App = () => {
       }
 
       apiService.create(personObject).then(response => {
-        setPersons(persons.concat(personObject))
+        setPersons(persons.concat(response.data))
       }).catch(()=> {
         console.log("Error in create!")
       })
 
     } else {
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const personToUpdate = persons.find(p => p.name === newName);
+        
+        const personObject = { 
+          ...personToUpdate,
+          number: newPhoneNumber
+        }
+
+        apiService.update(personToUpdate.id, personObject).then(returnedPerson => {
+          setPersons(persons.map(n => n.name !== personToUpdate.name ? n : returnedPerson.data))
+        }).catch(()=>console.log("Error in map!"))
+      } else {
+        console.log("Pressed Cancel!")
+      }
     }
 
     setNewName('')
