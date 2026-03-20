@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import apiService from './personsApi'
 
 const Filter = ({ valueToFind, onChange}) => {
   return (
@@ -12,14 +12,14 @@ const Filter = ({ valueToFind, onChange}) => {
   )
 }
 
-const Persons = ({ allPersons, filteredByName }) => {
+const Persons = ({ allPersons, filteredByName, deleteOnClick }) => {
   if(filteredByName.length === 0) {
     return (
       <div>
         {allPersons.map(person => {
           return ( 
             <p key={person.name}> 
-              {person.name} {person.number}
+              {person.name} {person.number} <button onClick={() => deleteOnClick(person.id, person.name)}> delete </button>
             </p>
           )
         })}
@@ -32,7 +32,7 @@ const Persons = ({ allPersons, filteredByName }) => {
           if (person.name.toLowerCase().indexOf(filteredByName.toLowerCase()) != -1) {
             return (
               <p key={person.name}>
-                {person.name} {person.number}
+                {person.name} {person.number} <button onClick={deleteOnClick}> delete </button>
               </p>
             )
           }
@@ -76,7 +76,13 @@ const App = () => {
         name: newName,
         number: newPhoneNumber
       }
-      setPersons(persons.concat(personObject))
+
+      apiService.create(personObject).then(response => {
+        setPersons(persons.concat(personObject))
+      }).catch(()=> {
+        console.log("Error in create!")
+      })
+
     } else {
       alert(`${newName} is already added to phonebook`)
     }
@@ -85,9 +91,25 @@ const App = () => {
     setNewPhoneNumber('')
   }
 
+  const deleteNote = (id, name) => {
+    if(window.confirm("Delete " + name + " ?")) {
+      apiService.deleteId(id).then(() => {
+        setPersons(persons.filter(n => n.id !== id))
+      }).catch(() => {
+        console.log("No such id!")
+      })
+
+    } else {
+      console.log("Pressed \"Cancel\" !")
+    }
+  }
+
+
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
+    apiService.getAll().then(response => {
       setPersons(response.data)
+    }).catch( ()=> {
+      console.log("Error to getAll persons!")
     })
   },[])
 
@@ -113,7 +135,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       
-      <Persons allPersons={persons} filteredByName={findByName}/>
+      <Persons allPersons={persons} filteredByName={findByName} deleteOnClick={deleteNote}/>
 
     </div>
   )
