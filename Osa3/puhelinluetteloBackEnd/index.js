@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+var morgan = require('morgan')
 
 let persons = [
     {
@@ -24,7 +25,19 @@ let persons = [
     }
 ] 
 
+morgan.token('body', req => req.bodyData)
+
+morgan.token('info', function (req, res) { 
+    return `${req.method} ${req.url} ${res.statusCode}`
+})
+
 app.use(express.json())
+app.use((req, res, next) => {
+    req.bodyData = JSON.stringify(req.body)
+    next()
+})
+
+app.use(morgan(':info :res[content-length] - :response-time ms :body'))
 
 app.get('/api/persons', (request, response) => {
     response.json(persons);
@@ -88,5 +101,5 @@ app.post('/api/persons', (request, response) => {
 
 const PORT = 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port: ${PORT}`);
 })
