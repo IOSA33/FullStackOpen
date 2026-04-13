@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
+const cors = require('cors')
 
 let persons = [
     {
@@ -32,6 +33,7 @@ morgan.token('info', function (req, res) {
 })
 
 app.use(express.json())
+app.use(cors())
 app.use((req, res, next) => {
     req.bodyData = JSON.stringify(req.body)
     next()
