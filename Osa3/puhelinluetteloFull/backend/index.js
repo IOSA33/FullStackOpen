@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 var morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 let persons = [
     {
@@ -26,8 +27,21 @@ let persons = [
     }
 ] 
 
-morgan.token('body', req => req.bodyData)
+// mongoose connection
+const password = process.argv[2]
+const url = 
+    `mongodb+srv://fullstack:${password}@cluster0.elifttw.mongodb.net/?appName=Cluster0`
+mongoose.set('strictQuery',false)
+mongoose.connect(url, { family: 4 })
 
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+const person = mongoose.model('Person', personSchema)
+
+
+morgan.token('body', req => req.bodyData)
 morgan.token('info', function (req, res) { 
     return `${req.method} ${req.url} ${res.statusCode}`
 })
