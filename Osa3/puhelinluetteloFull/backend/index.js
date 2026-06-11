@@ -27,6 +27,11 @@ let persons = [
     }
 ] 
 
+if(process.argv.length < 3) {
+  console.log('Give a parameter')
+  process.exit(1)
+}
+
 // mongoose connection
 const password = process.argv[2]
 const url = 
