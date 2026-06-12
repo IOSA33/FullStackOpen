@@ -43,8 +43,15 @@ const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 })
-const person = mongoose.model('Person', personSchema)
+const Person = mongoose.model('Person', personSchema)
 
+personSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
+})
 
 morgan.token('body', req => req.bodyData)
 morgan.token('info', function (req, res) { 
@@ -62,23 +69,25 @@ app.use((req, res, next) => {
 app.use(morgan(':info :res[content-length] - :response-time ms :body'))
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons);
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id;
+    const id = request.params.id
     const newPersons = persons.filter(n => n.id === id)
 
     if(newPersons.length === 0) {
         response.status(404).json({Error: "No such id"})
     }
 
-    response.json(newPersons);
+    response.json(newPersons)
 })
 
 app.get('/info', (request, response) => {
-    const timestamp = new Date();
-    response.send('<p>Phonebook has info for '+persons.length+' people</p> <p>'+timestamp.toString()+'</p>');
+    const timestamp = new Date()
+    response.send('<p>Phonebook has info for '+persons.length+' people</p> <p>'+timestamp.toString()+'</p>')
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -123,5 +132,5 @@ app.post('/api/persons', (request, response) => {
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port: ${PORT}`);
+  console.log(`Server running on port: ${PORT}`)
 })
