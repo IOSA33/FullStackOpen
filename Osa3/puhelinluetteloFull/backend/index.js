@@ -1,57 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose')
-
-let persons = [
-    {
-        id: "1",
-        name: "Arto Hellas",
-        number: "040-123456"
-    },
-    {
-        id: "2",
-        name: "Ada Lovelace",
-        number: "39-44-5323523"
-    },
-    {
-        id: "3",
-        name: "Dan Abramov",
-        number: "040-123332132"
-    },
-    {
-        id: "4",
-        name: "Mary Poppendieck",
-        number: "39-324-234222"
-    }
-] 
-
-if(process.argv.length < 3) {
-  console.log('Give a parameter')
-  process.exit(1)
-}
-
-// mongoose connection
-const password = process.argv[2]
-const url = 
-    `mongodb+srv://fullstack:${password}@cluster0.elifttw.mongodb.net/?appName=Cluster0`
-mongoose.set('strictQuery',false)
-mongoose.connect(url, { family: 4 })
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
-const Person = mongoose.model('Person', personSchema)
-
-personSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString()
-        delete returnedObject._id
-        delete returnedObject.__v
-    }
-})
+const Person = require('./models/person')
 
 morgan.token('body', req => req.bodyData)
 morgan.token('info', function (req, res) { 
@@ -75,14 +27,9 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const newPersons = persons.filter(n => n.id === id)
-
-    if(newPersons.length === 0) {
-        response.status(404).json({Error: "No such id"})
-    }
-
-    response.json(newPersons)
+    Person.findById(request.params.id).then(person => {
+        response.json(person)
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -113,24 +60,17 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    if (persons.some(person => person.name === body.name)) {
-        return response.status(400).json({ 
-            error: 'name must be unique'
-        })    
-    }
-
-    const newPerson = {
-        id: generateId(),
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
+    })
 
-    persons = persons.concat(newPerson)
-
-    response.json(newPerson)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`)
 })
