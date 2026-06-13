@@ -96,6 +96,12 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
+    if (body.name.length < 3) {
+        return response.status(400).json({
+            error: `Person validation failed: name: Path \`name\` (\`${body.name}\`) is shorter than the minimum allowed length (3).`
+        })
+    }
+
     const person = new Person({
         name: body.name,
         number: body.number
@@ -103,6 +109,8 @@ app.post('/api/persons', (request, response) => {
 
     person.save().then(savedPerson => {
         response.json(savedPerson)
+    }).catch( error => {
+        response.status(400).json({ error: 'example: 12-345678 or 123-456789'})
     })
 })
 

@@ -100,8 +100,14 @@ const App = () => {
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
-      }).catch(()=> {
-        console.log("Error in create!")
+      }).catch( error => {
+        console.log("Error in create: ", error.response.data)
+        setErrorMessage(error?.response?.data?.error)
+        setErrorState(false)
+        setTimeout(() => {
+          setErrorMessage(null)
+          setErrorState(true)
+        }, 5000)
       })
     } else {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
