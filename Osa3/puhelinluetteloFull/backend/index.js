@@ -1,4 +1,9 @@
 require('dotenv').config()
+
+// Without this mongodb throws reject state,because of newest node js version
+// const dns = require('node:dns')
+// dns.setServers(['1.1.1.1', '1.0.0.1'])
+
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
