@@ -1,7 +1,0 @@
-POST https://fullstackopen-vjbj.onrender.com/api/persons
-Content-Type: application/json
-
-{
-    "name": "New Name",
-    "number": "93490284092809"
-}
