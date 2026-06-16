@@ -3,6 +3,7 @@ dns.setServers(["1.1.1.1", "1.0.0.1"]);
 
 const express = require('express')
 const mongoose = require('mongoose')
+const config = require('./utils/config')
 
 const app = express()
 
@@ -15,8 +16,7 @@ const blogSchema = mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema)
 
-const mongoUrl = 'mongodb+srv://fullstack:1234@cluster0.dxaodu2.mongodb.net/?appName=Cluster0'
-mongoose.connect(mongoUrl, { family: 4 })
+mongoose.connect(config.MONGODB_URI, { family: 4 })
 
 app.use(express.json())
 
@@ -34,7 +34,6 @@ app.post('/api/blogs', (request, response) => {
   })
 })
 
-const PORT = 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
 })
