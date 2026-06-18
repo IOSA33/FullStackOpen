@@ -23,8 +23,30 @@ const favoriteBlog = (blogs) => {
     return most_popular_blog
 }
 
+const mostBlogs = (blogs) => {
+    const map = new Map()
+
+    for (let i = 0; i < blogs.length; i++) {
+        const key = blogs[i].author
+
+        if (map.has(key)) {
+            map.set(key, map.get(key) + 1)
+        } else {
+            map.set(key, 1)
+        }
+    }
+
+    const result = [...map.entries()].reduce((a, e) => e[1] > a[1] ? e : a)
+
+    return {
+        "author": result[0],
+        "blogs": result[1]
+    }
+}
+
 module.exports = {
     dummy,
     totalLikes,
-    favoriteBlog
+    favoriteBlog,
+    mostBlogs
 }
