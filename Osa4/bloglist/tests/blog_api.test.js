@@ -86,19 +86,19 @@ test('blog without url and title is not added', async () => {
 })
 
 test('a blog can be deleted', async () => {
-  const blogsAtStart = await helper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
 
-  await api
-    .delete(`/api/blogs/${blogToDelete.id}`)
-    .expect(204)
+    await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
 
-  const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await helper.blogsInDb()
 
-  const ids = blogsAtEnd.map(n => n.id)
-  assert(!ids.includes(blogToDelete.id))
+    const ids = blogsAtEnd.map(n => n.id)
+    assert(!ids.includes(blogToDelete.id))
 
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
 
 test('identifier named id ', async () => {
@@ -106,6 +106,24 @@ test('identifier named id ', async () => {
     const firstBlog = blogsAtStart[0]
 
     assert(firstBlog.id)
+})
+
+test('updating likes ', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const firstBlog = blogsAtStart[0]
+    const updatedBlog = {
+        likes: 333
+    }
+
+    await api
+        .put(`/api/blogs/${firstBlog.id}`)
+        .send(updatedBlog)
+        .expect(200)
+
+    const getBlogs = await helper.blogsInDb()
+    const newFirstBlog = getBlogs[0]
+
+    assert.strictEqual(newFirstBlog.likes, 333)
 })
 
 after(async () => {
