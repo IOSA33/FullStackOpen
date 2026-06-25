@@ -10,26 +10,28 @@ const api = supertest(app)
 
 beforeEach(async () => {
     await Blog.deleteMany({})
-    let blogObject = new Blog(helper.initialBlogs[0])
-    await blogObject.save()
-    blogObject = new Blog(helper.initialBlogs[1])
-    await blogObject.save()
+
+    const blogObjects = helper.initialBlogs
+        .map(blog => new Blog(blog))
+    const promiseArray = blogObjects.map(blog => blog.save())
+    await Promise.all(promiseArray)
 })
 
-test.only('blogs are returned as json', async () => {
+test('blogs are returned as json', async () => {
+    console.log('entered test')
     await api
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
 })
 
-test.only('all notes are returned', async () => {
+test('all notes are returned', async () => {
     const response = await api.get('/api/blogs')
 
     assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
-test.only('a valid note can be added ', async () => {
+test('a valid note can be added ', async () => {
     const newBlog = {
         "title":	"HELLOSir",
         "author":	"YESSIR1",
@@ -50,10 +52,27 @@ test.only('a valid note can be added ', async () => {
     assert(contents.includes('HELLOSir'))
 })
 
-test.only('blog without content is not added', async () => {
+test('blog without likes is added', async () => {
     const newBlog = {
         "title":	"HELLOSir",
-        "author":	"YESSIR1"
+        "author":	"YESSIR1",
+        "url": "FFF//WW12.COM"
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+})
+
+test('blog without url and title is not added', async () => {
+    const newBlog = {
+        "author":	"YESSIR1",
+        "likes": 223
     }
 
     await api
@@ -66,6 +85,28 @@ test.only('blog without content is not added', async () => {
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const ids = blogsAtEnd.map(n => n.id)
+  assert(!ids.includes(blogToDelete.id))
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test('identifier named id ', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const firstBlog = blogsAtStart[0]
+
+    assert(firstBlog.id)
+})
 
 after(async () => {
     await mongoose.connection.close()
