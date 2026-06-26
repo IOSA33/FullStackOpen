@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title":	"HELLO2",
+    "author":	"YESSIR",
+    "url":	"FFF//WWW123.COM",
+    "likes":	442,
+    "userId": "6a3eb5a6409078a149df269c"
+}
