@@ -1,4 +1,4 @@
-const { test, after, beforeEach, before } = require('node:test')
+const { test, after, beforeEach, before, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -129,7 +129,7 @@ test('updating likes ', async () => {
 })
 
 
-descibe('when there is initially one user in db', () => {
+describe('when there is initially one user in db', () => {
     beforeEach(async () => {
         await User.deleteMany({})
 
