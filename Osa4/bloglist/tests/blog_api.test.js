@@ -39,6 +39,7 @@ test('a valid blog can be added ', async () => {
         "author":	"YESSIR1",
         "url":	"FFF//WW12.COM",
         "likes":	432,
+        "userId": "6a48048ae5e528f1cf8a37e8"
     }
 
     await api
@@ -144,7 +145,7 @@ describe('when there is initially one user in db', () => {
 
         const newUser = {
         username: 'mluukkai',
-        name: 'Matti Luukkainen',
+        name: 'MattiLuukkainen',
         password: 'salainen',
         }
 
