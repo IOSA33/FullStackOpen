@@ -181,6 +181,27 @@ describe('when there is initially one user in db', () => {
 
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
+    
+    test.only('creation fails with proper statuscode and message if username or name is shorter than 3 chars', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+        username: 'ro',
+        name: 'Superuser',
+        password: 'salainen',
+        }
+
+        const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes('username and name should be atleast 3 characters long'))
+
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
 })
 
 after(async () => {

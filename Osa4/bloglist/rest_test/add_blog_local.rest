@@ -1,10 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWQiOiI2YTQ4MDQ4YWU1ZTUyOGYxY2Y4YTM3ZTgiLCJpYXQiOjE3ODMxMDQ2NjQsImV4cCI6MTc4MzEwODI2NH0.rpWBQz1QzXzUwCJi8I2SZAK-ojd0V8Q7t61zXNuRZfw
 
 {
-    "title":	"HELLO2",
+    "title":	"HELLO4",
     "author":	"YESSIR",
     "url":	"FFF//WWW123.COM",
     "likes":	442,
-    "userId": "6a3eb5a6409078a149df269c"
+    "userId": "6a48048ae5e528f1cf8a37e8"
 }

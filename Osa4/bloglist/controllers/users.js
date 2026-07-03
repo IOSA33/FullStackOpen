@@ -5,6 +5,11 @@ const User = require('../models/user')
 usersRouter.post('/', async (request, response) => {
     const { username, name, password } = request.body
 
+    if (username.length < 3 || name.length < 3) {
+        response.status(400).json({"error": "username and name should be atleast 3 characters long"})
+        return
+    }
+
     const salted = 10
     const passwordHash = await bcrypt.hash(password, salted)
 
