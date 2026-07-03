@@ -7,12 +7,7 @@ const initialBlogs = [
         "author":	"YESSIR",
         "url":	"FFF//WWW123.COM",
         "likes":	442,
-    },
-    {
-        "title":	"HELLO",
-        "author":	"YESSIR",
-        "url":	"FFF//WWW123.COM",
-        "likes":	442,
+        "userId": "qw9rwqeuriouqwpoeiu"
     }
 ]
 

@@ -10,100 +10,141 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
+describe('blog tests', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
 
-    const blogObjects = helper.initialBlogs
-        .map(blog => new Blog(blog))
-    const promiseArray = blogObjects.map(blog => blog.save())
-    await Promise.all(promiseArray)
+        const blogObjects = helper.initialBlogs
+            .map(blog => new Blog(blog))
+        const promiseArray = blogObjects.map(blog => blog.save())
+        await Promise.all(promiseArray)
+    })
+
+    test('blogs are returned as json', async () => {
+        console.log('entered test')
+        await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+    })
+
+    test('all blogs are returned', async () => {
+        const response = await api.get('/api/blogs')
+
+        assert.strictEqual(response.body.length, helper.initialBlogs.length)
+    })
+
+    test('a valid blog can be added ', async () => {
+        const newBlog = {
+            "title":	"HELLOSir",
+            "author":	"YESSIR1",
+            "url":	"FFF//WW12.COM",
+            "likes":	432,
+            "userId": "6a48048ae5e528f1cf8a37e8"
+        }
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: 'root',
+                password: 'sekret'
+            })
+
+        const token = loginResponse.body.token
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+        const contents = blogsAtEnd.map(r => r.title)
+        assert(contents.includes('HELLOSir'))
+    })
+
+    test('blog without likes is added', async () => {
+        const newBlog = {
+            "title":	"HELLOSir",
+            "author":	"YESSIR1",
+            "url": "FFF//WW12.COM"
+        }
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: 'root',
+                password: 'sekret'
+            })
+
+        const token = loginResponse.body.token
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(201)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    })
+
+    test('blog without url and title is not added', async () => {
+        const newBlog = {
+            "author":	"YESSIR1",
+            "likes": 223
+        }
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: 'root',
+                password: 'sekret'
+            })
+
+        const token = loginResponse.body.token
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('a blog can be deleted', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToDelete = blogsAtStart[0]
+        
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: 'root',
+                password: 'sekret'
+            })
+
+        const token = loginResponse.body.token
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(204)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        const ids = blogsAtEnd.map(n => n.id)
+        assert(!ids.includes(blogToDelete.id))
+
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    })
 })
-
-test('blogs are returned as json', async () => {
-    console.log('entered test')
-    await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-})
-
-test('all blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-
-    assert.strictEqual(response.body.length, helper.initialBlogs.length)
-})
-
-test('a valid blog can be added ', async () => {
-    const newBlog = {
-        "title":	"HELLOSir",
-        "author":	"YESSIR1",
-        "url":	"FFF//WW12.COM",
-        "likes":	432,
-        "userId": "6a48048ae5e528f1cf8a37e8"
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-
-    const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
-
-    const contents = blogsAtEnd.map(r => r.title)
-    assert(contents.includes('HELLOSir'))
-})
-
-test('blog without likes is added', async () => {
-    const newBlog = {
-        "title":	"HELLOSir",
-        "author":	"YESSIR1",
-        "url": "FFF//WW12.COM"
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-
-    const blogsAtEnd = await helper.blogsInDb()
-
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
-})
-
-test('blog without url and title is not added', async () => {
-    const newBlog = {
-        "author":	"YESSIR1",
-        "likes": 223
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
-
-    const blogsAtEnd = await helper.blogsInDb()
-
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
-})
-
-test('a blog can be deleted', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
-
-    await api
-        .delete(`/api/blogs/${blogToDelete.id}`)
-        .expect(204)
-
-    const blogsAtEnd = await helper.blogsInDb()
-
-    const ids = blogsAtEnd.map(n => n.id)
-    assert(!ids.includes(blogToDelete.id))
-
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
-})
-
 test('identifier named id ', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const firstBlog = blogsAtStart[0]
