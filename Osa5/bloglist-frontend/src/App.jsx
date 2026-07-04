@@ -4,6 +4,8 @@ import blogService from './services/blogs'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -13,6 +15,8 @@ const App = () => {
 
   return (
     <div>
+      <h2>log in application</h2>
+
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
