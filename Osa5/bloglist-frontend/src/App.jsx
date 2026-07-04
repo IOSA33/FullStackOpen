@@ -42,7 +42,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -55,11 +55,15 @@ const App = () => {
     try {
       const response = await blogService.create({ title, author, url })
       setBlogs(blogs.concat(response))
+      setErrorMessage(`a new blog ${title} by ${author} added`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
       setTitle('')
       setAuthor('')
       setUrl('')
     } catch {
-      setErrorMessage('wrong')
+      setErrorMessage('Missed some inputs')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -138,13 +142,30 @@ const App = () => {
     )
   } 
 
+  const showErrorMessage = () => {
+    return (
+      <div>
+        <b>
+          {errorMessage}
+        </b>
+      </div>
+    )
+  }
+
   return (
     <div>
-      {!user && loginForm()}
+      {!user && (
+        <div>
+          {errorMessage && showErrorMessage()}
+          {loginForm()}
+        </div>
+        )}
+      
       {user && (
         <div>
           <h1>blogs</h1>
-          
+          {errorMessage && showErrorMessage()}
+
           <p>{user.name} logged in
             <button onClick={logoutHandle}>logout</button>
           </p>
