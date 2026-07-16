@@ -12,7 +12,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-
+  const [formVisible, setFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -73,6 +73,10 @@ const App = () => {
   const logoutHandle = () => {
     window.localStorage.clear()
     return
+  }
+
+  const func_setFormVisible = () => {
+    setFormVisible(!formVisible)
   }
 
   const loginForm = () => (
@@ -137,6 +141,8 @@ const App = () => {
           </label>
           <br></br>
           <button type="submit">create</button>
+          <br></br>
+          <button type='button' onClick={ () => func_setFormVisible() }>cancel</button>
         </form>
       </div>
     )
