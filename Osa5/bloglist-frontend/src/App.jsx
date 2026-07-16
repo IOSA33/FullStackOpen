@@ -108,11 +108,16 @@ const App = () => {
   )
 
   const blogForm = () => {
+    const hideWhenVisible = { display: formVisible ? 'none' : '' }
+    const showWhenVisible = { display: formVisible ? '' : 'none' }
+
     return (
       <div>
-        <br></br>
         <h2>add new blog</h2>
-        <form onSubmit={handleSubmitBlog}>
+        <div style={hideWhenVisible}>
+        <button type='button' onClick={()=> func_setFormVisible()}>create new blog</button>
+        </div>
+        <form onSubmit={handleSubmitBlog} style={showWhenVisible}>
           <label>
             title
             <input
