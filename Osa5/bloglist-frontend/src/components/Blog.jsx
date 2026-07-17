@@ -1,7 +1,7 @@
-import Togglable from "./Togglable"
-import { useState } from "react"
+import Togglable from './Togglable'
+import { useState } from 'react'
 
-const Blog = ({ blog, updateLikes }) => {
+const Blog = ({ blog, updateLikes, deleteBlog }) => {
   const [showInfo, setShowInfo] = useState(false)
   const changeShowInfo = () => {
     setShowInfo(!showInfo)
@@ -9,9 +9,9 @@ const Blog = ({ blog, updateLikes }) => {
 
   const visibilityFunc = () => {
     if (showInfo) {
-      return "hide"
+      return 'hide'
     } else {
-      return "view"
+      return 'view'
     }
   }
 
@@ -29,20 +29,29 @@ const Blog = ({ blog, updateLikes }) => {
     updateLikes(blog.id, { ...blog, likes: blog.likes + 1 })
   }
 
+  const handleDeleteBlog = () => {
+    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      return
+    }
+    deleteBlog(blog.id)
+  }
+
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author} 
-      
+      {blog.title} {blog.author}
+
         <button onClick={() => changeShowInfo()}>
           {visibilityFunc()}
         </button>
-     
+
       <div style={visibilityStyle}>
         {blog.url}
         <br></br>
         likes {blog.likes} <button onClick={() => handleUpdatedLikes()}>like</button>
         <br></br>
         {blog.user?.name}
+        <br></br>
+        <button onClick={() => handleDeleteBlog()}>remove</button>
       </div>
 
     </div>

@@ -10,7 +10,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)  
+  const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -34,9 +34,9 @@ const App = () => {
 
     try {
       const user = await loginService.login({ username, password })
-      
+
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      
+
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -78,14 +78,22 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async (id) => {
+    try {
+      await blogService.deleteBlog(id)
+      setBlogs(blogs.filter(b => b.id !== id))
+    } catch {
+      setErrorMessage('Missed some inputs')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const logoutHandle = () => {
     window.localStorage.clear()
     setUser(null)
     return
-  }
-
-  const func_setFormVisible = () => {
-    setFormVisible(!formVisible)
   }
 
   const loginForm = () => (
@@ -133,8 +141,8 @@ const App = () => {
           {errorMessage && showErrorMessage()}
           {loginForm()}
         </div>
-        )}
-      
+      )}
+
       {user && (
         <div>
           <h1>blogs</h1>
@@ -150,7 +158,7 @@ const App = () => {
 
           {
             [...blogs].sort((a,b) => b.likes - a.likes).map(blog =>
-              <Blog key={blog.id} blog={blog} updateLikes={handleUpdateBlog} />
+              <Blog key={blog.id} blog={blog} updateLikes={handleUpdateBlog} deleteBlog={handleDeleteBlog}/>
             )
           }
         </div>
