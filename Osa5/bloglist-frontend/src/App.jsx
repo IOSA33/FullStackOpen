@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import Togglable from './components/Togglable'
+import CreateForm from './components/CreateForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,11 +10,9 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [formVisible, setFormVisible] = useState(false)
+  const [user, setUser] = useState(null)  
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -49,19 +49,15 @@ const App = () => {
     }
   }
 
-  const handleSubmitBlog = async (event) => {
-    event.preventDefault()
-
+  const handleSubmitBlog = async (blogObject) => {
     try {
-      const response = await blogService.create({ title, author, url })
+      blogFormRef.current.toggleVisibility()
+      const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response))
-      setErrorMessage(`a new blog ${title} by ${author} added`)
+      setErrorMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     } catch {
       setErrorMessage('Missed some inputs')
       setTimeout(() => {
@@ -72,6 +68,7 @@ const App = () => {
 
   const logoutHandle = () => {
     window.localStorage.clear()
+    setUser(null)
     return
   }
 
@@ -107,51 +104,51 @@ const App = () => {
     </form>
   )
 
-  const blogForm = () => {
-    const hideWhenVisible = { display: formVisible ? 'none' : '' }
-    const showWhenVisible = { display: formVisible ? '' : 'none' }
+  // const blogForm = () => {
+  //   const hideWhenVisible = { display: formVisible ? 'none' : '' }
+  //   const showWhenVisible = { display: formVisible ? '' : 'none' }
 
-    return (
-      <div>
-        <h2>add new blog</h2>
-        <div style={hideWhenVisible}>
-        <button type='button' onClick={()=> func_setFormVisible()}>create new blog</button>
-        </div>
-        <form onSubmit={handleSubmitBlog} style={showWhenVisible}>
-          <label>
-            title
-            <input
-              type="text"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </label>
-          <br></br>
-          <label>
-            author
-            <input
-              type="text"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </label>
-          <br></br>
-          <label>
-            url
-            <input
-              type="text"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </label>
-          <br></br>
-          <button type="submit">create</button>
-          <br></br>
-          <button type='button' onClick={ () => func_setFormVisible() }>cancel</button>
-        </form>
-      </div>
-    )
-  } 
+  //   return (
+  //     <div>
+  //       <h2>add new blog</h2>
+  //       <div style={hideWhenVisible}>
+  //       <button type='button' onClick={()=> func_setFormVisible()}>create new blog</button>
+  //       </div>
+  //       <form onSubmit={handleSubmitBlog} style={showWhenVisible}>
+  //         <label>
+  //           title
+  //           <input
+  //             type="text"
+  //             value={title}
+  //             onChange={({ target }) => setTitle(target.value)}
+  //           />
+  //         </label>
+  //         <br></br>
+  //         <label>
+  //           author
+  //           <input
+  //             type="text"
+  //             value={author}
+  //             onChange={({ target }) => setAuthor(target.value)}
+  //           />
+  //         </label>
+  //         <br></br>
+  //         <label>
+  //           url
+  //           <input
+  //             type="text"
+  //             value={url}
+  //             onChange={({ target }) => setUrl(target.value)}
+  //           />
+  //         </label>
+  //         <br></br>
+  //         <button type="submit">create</button>
+  //         <br></br>
+  //         <button type='button' onClick={ () => func_setFormVisible() }>cancel</button>
+  //       </form>
+  //     </div>
+  //   )
+  // } 
 
   const showErrorMessage = () => {
     return (
@@ -181,7 +178,9 @@ const App = () => {
             <button onClick={logoutHandle}>logout</button>
           </p>
 
-          {blogForm()}
+          <Togglable buttonLabel="create a new blog" ref={blogFormRef}>
+            <CreateForm createBlog={handleSubmitBlog} />
+          </Togglable>
 
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
