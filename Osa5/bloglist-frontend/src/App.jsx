@@ -66,6 +66,18 @@ const App = () => {
     }
   }
 
+  const handleUpdateBlog = async (id, updatedBlogObject) => {
+    try {
+      const response = await blogService.update(id, updatedBlogObject)
+      setBlogs(blogs.map(b => b.id === id ? response : b))
+    } catch {
+      setErrorMessage('Missed some inputs')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const logoutHandle = () => {
     window.localStorage.clear()
     setUser(null)
@@ -137,7 +149,7 @@ const App = () => {
           </Togglable>
 
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} updateLikes={handleUpdateBlog} />
           )}
         </div>
       )}
