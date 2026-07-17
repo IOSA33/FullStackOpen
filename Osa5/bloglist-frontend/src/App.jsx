@@ -104,52 +104,6 @@ const App = () => {
     </form>
   )
 
-  // const blogForm = () => {
-  //   const hideWhenVisible = { display: formVisible ? 'none' : '' }
-  //   const showWhenVisible = { display: formVisible ? '' : 'none' }
-
-  //   return (
-  //     <div>
-  //       <h2>add new blog</h2>
-  //       <div style={hideWhenVisible}>
-  //       <button type='button' onClick={()=> func_setFormVisible()}>create new blog</button>
-  //       </div>
-  //       <form onSubmit={handleSubmitBlog} style={showWhenVisible}>
-  //         <label>
-  //           title
-  //           <input
-  //             type="text"
-  //             value={title}
-  //             onChange={({ target }) => setTitle(target.value)}
-  //           />
-  //         </label>
-  //         <br></br>
-  //         <label>
-  //           author
-  //           <input
-  //             type="text"
-  //             value={author}
-  //             onChange={({ target }) => setAuthor(target.value)}
-  //           />
-  //         </label>
-  //         <br></br>
-  //         <label>
-  //           url
-  //           <input
-  //             type="text"
-  //             value={url}
-  //             onChange={({ target }) => setUrl(target.value)}
-  //           />
-  //         </label>
-  //         <br></br>
-  //         <button type="submit">create</button>
-  //         <br></br>
-  //         <button type='button' onClick={ () => func_setFormVisible() }>cancel</button>
-  //       </form>
-  //     </div>
-  //   )
-  // } 
-
   const showErrorMessage = () => {
     return (
       <div>
