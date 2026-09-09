@@ -1,11 +1,16 @@
+import { useContext } from 'react'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import {getAll} from './services/anecdote'
+import CounterContext from './components/CounterContext'
 
 import { useQuery } from '@tanstack/react-query'
 
 const App = () => {
+  const { setMessage } = useContext(CounterContext)
+
   const handleVote = (anecdote) => {
+    setMessage(`you voted '${anecdote.content}' voted`)
     console.log('vote')
   }
 
