@@ -1,8 +1,7 @@
-import { useContext } from "react"
-import CounterContext from "./CounterContext"
+import useNotify from "./useNotify"
 
 const Notification = () => {
-  const { message } = useContext(CounterContext)
+  const { message } = useNotify()
 
   const style = {
     border: "solid",

@@ -1,16 +1,20 @@
-import { useContext } from "react"
-import CounterContext from "./CounterContext"
-import { createAnecdote } from "../services/anecdote"
 import { useAnecdotes } from "./customHook"
+import useNotify from "./useNotify"
 
 const AnecdoteForm = () => {
-  const { setMessage } = useContext(CounterContext)
+  const { setMessage } = useNotify()
   
   const { addAnecdote } = useAnecdotes()
 
   const onCreate = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
+
+    if (content.length < 5) {
+      setMessage(`Length is less than 5: '${content}'`)
+      return
+    }
+
     setMessage(`Created Anecdote ${content}`)
     event.target.reset()
     console.log('new anecdote')
