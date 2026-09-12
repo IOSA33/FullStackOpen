@@ -20,6 +20,12 @@ const CreateNew = ({ addNew }) => {
     navigate("/")
   }
 
+  const clearInputs = () => {
+    content.onChange('')
+    author.onChange('')
+    info.onChange('')
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
@@ -37,7 +43,9 @@ const CreateNew = ({ addNew }) => {
           <input {...info} />
         </div>
         <button>create</button>
+        
       </form>
+      <button onClick={clearInputs}>reset</button>
     </div>
   )
 }
